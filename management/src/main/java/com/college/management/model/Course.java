@@ -22,7 +22,6 @@ public class Course {
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
-    // Optional: simple name fallback (useful if faculty is null)
     private String facultyInCharge;
 
     // --- Getters and Setters ---
