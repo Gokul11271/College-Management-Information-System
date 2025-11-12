@@ -1,14 +1,10 @@
 package com.college.management.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Course {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +17,60 @@ public class Course {
 
     private int credits;
 
+    // Relationship to Faculty (Many Courses -> One Faculty)
     @ManyToOne
     @JoinColumn(name = "faculty_id")
-    private Faculty faculty; // assumes Faculty entity already exists
+    private Faculty faculty;
+
+    // Optional: simple name fallback (useful if faculty is null)
+    private String facultyInCharge;
+
+    // --- Getters and Setters ---
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCourseCode() {
+        return courseCode;
+    }
+
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public int getCredits() {
+        return credits;
+    }
+
+    public void setCredits(int credits) {
+        this.credits = credits;
+    }
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+    public String getFacultyInCharge() {
+        return facultyInCharge;
+    }
+
+    public void setFacultyInCharge(String facultyInCharge) {
+        this.facultyInCharge = facultyInCharge;
+    }
 }
