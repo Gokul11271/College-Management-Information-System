@@ -27,7 +27,7 @@ public class StudentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
+        return ResponseEntity.ok(service.getById(java.util.Objects.requireNonNull(id)));
     }
 
     @PostMapping
@@ -40,12 +40,12 @@ public class StudentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Student> update(@PathVariable Long id, @Valid @RequestBody Student student) {
-        return ResponseEntity.ok(service.update(id, student));
+        return ResponseEntity.ok(service.update(java.util.Objects.requireNonNull(id), student));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+        service.delete(java.util.Objects.requireNonNull(id));
         return ResponseEntity.noContent().build();
     }
 }
