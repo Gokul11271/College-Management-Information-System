@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final UserService service;
@@ -24,13 +24,17 @@ public class AuthController {
         String password = body.get("password");
         String confirmPassword = body.get("confirmPassword");
 
+        if (email == null || password == null || confirmPassword == null) {
+            return ResponseEntity.badRequest().body("Missing email or password or confirmPassword");
+        }
         if (!password.equals(confirmPassword)) {
             return ResponseEntity.badRequest().body("Passwords do not match");
         }
 
         try {
-            User user = service.register(email, password);
-            return ResponseEntity.ok(user);
+            User u = service.register(email, password);
+            u.setPassword(null); // hide password
+            return ResponseEntity.ok(u);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -41,9 +45,15 @@ public class AuthController {
         String email = body.get("email");
         String password = body.get("password");
 
-        boolean success = service.login(email, password);
-        return success ?
-                ResponseEntity.ok("Login successful") :
-                ResponseEntity.status(401).body("Invalid credentials");
+        if (email == null || password == null) {
+            return ResponseEntity.badRequest().body("Missing email or password");
+        }
+
+        boolean ok = service.login(email, password);
+        if (ok) {
+            return ResponseEntity.ok("Login successful!");
+        } else {
+            return ResponseEntity.status(401).body("Invalid email or password");
+        }
     }
 }

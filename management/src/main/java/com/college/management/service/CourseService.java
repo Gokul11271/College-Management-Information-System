@@ -27,7 +27,7 @@ public class CourseService {
 
         existing.setCourseName(input.getCourseName());
         existing.setCredits(input.getCredits());
-        existing.setFaculty(input.getFaculty());
+       
 
         return repo.save(existing);
     }

@@ -22,8 +22,9 @@ public class FeesService {
         return repo.save(fees);
     }
 
-    public List<Fees> findByStudent(Long studentId) {
-        return repo.findByStudentId(studentId);
+    // FIX: Changed parameter to String and used the correct repository method
+    public List<Fees> findByStudent(String studentName) { 
+        return repo.findByStudentNameContainingIgnoreCase(studentName);
     }
 
     public List<Fees> getAll() {

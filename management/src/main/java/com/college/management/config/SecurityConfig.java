@@ -15,15 +15,14 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**").permitAll()   // ✅ Allow all API routes
-                .anyRequest().permitAll()                 // ✅ Disable auth completely
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().permitAll()
             )
-            .formLogin(login -> login.disable())          // ✅ Disable form login
-            .httpBasic(basic -> basic.disable());         // ✅ Disable basic auth
+            .httpBasic(basic -> basic.disable())
+            .formLogin(form -> form.disable());
         return http.build();
     }
 
-    // ✅ Needed to fix your "PasswordEncoder bean not found" error
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

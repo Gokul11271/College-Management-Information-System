@@ -1,35 +1,32 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Sidebar() {
-  const location = useLocation();
-
-  const links = [
-    { to: "/", label: "Dashboard" },
-    { to: "/students", label: "Students" },
-    { to: "/faculty", label: "Faculty" },
-    { to: "/courses", label: "Courses" },
-    { to: "/departments", label: "Departments" },
-    { to: "/fees", label: "Fees" },
-  ];
-
   return (
-    <aside className="w-64 bg-blue-700 text-white h-screen p-5">
-      <h2 className="text-xl font-semibold mb-8">Menu</h2>
-      <ul className="space-y-4">
-        {links.map((link) => (
-          <li key={link.to}>
-            <Link
-              to={link.to}
-              className={`block px-3 py-2 rounded hover:bg-blue-500 ${
-                location.pathname === link.to ? "bg-blue-500" : ""
-              }`}
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </aside>
+    <div className="w-64 bg-blue-900 text-white flex flex-col">
+      <div className="p-4 text-2xl font-bold border-b border-blue-700">
+        CMS Menu
+      </div>
+      <nav className="flex-1 p-4 space-y-3">
+        <Link to="/" className="block hover:bg-blue-700 p-2 rounded">
+          Dashboard
+        </Link>
+        <Link to="/students" className="block hover:bg-blue-700 p-2 rounded">
+          Students
+        </Link>
+        <Link to="/faculty" className="block hover:bg-blue-700 p-2 rounded">
+          Faculty
+        </Link>
+        <Link to="/courses" className="block hover:bg-blue-700 p-2 rounded">
+          Courses
+        </Link>
+        <Link to="/departments" className="block hover:bg-blue-700 p-2 rounded">
+          Departments
+        </Link>
+        <Link to="/fees" className="block hover:bg-blue-700 p-2 rounded">
+          Fees
+        </Link>
+      </nav>
+    </div>
   );
 }

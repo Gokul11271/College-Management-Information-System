@@ -1,45 +1,34 @@
 package com.college.management.controller;
 
 import com.college.management.model.StudentMarks;
-import com.college.management.service.StudentMarksService;
-import org.springframework.http.ResponseEntity;
+import com.college.management.repository.StudentMarksRepository;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/marks")
+@CrossOrigin(origins = "http://localhost:5173")
 public class StudentMarksController {
 
-    private final StudentMarksService service;
+    private final StudentMarksRepository repo;
 
-    public StudentMarksController(StudentMarksService service) {
-        this.service = service;
-    }
-
-    @PostMapping
-    public ResponseEntity<StudentMarks> add(@RequestBody StudentMarks marks) {
-        return ResponseEntity.ok(service.save(marks));
-    }
-
-    @GetMapping("/student/{studentId}")
-    public List<StudentMarks> byStudent(@PathVariable Long studentId) {
-        return service.getByStudent(studentId);
-    }
-
-    @GetMapping("/course/{courseId}")
-    public List<StudentMarks> byCourse(@PathVariable Long courseId) {
-        return service.getByCourse(courseId);
+    public StudentMarksController(StudentMarksRepository repo) {
+        this.repo = repo;
     }
 
     @GetMapping
-    public List<StudentMarks> all() {
-        return service.getAll();
+    public List<StudentMarks> getAllMarks() {
+        return repo.findAll();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/search")
+    public List<StudentMarks> searchMarks(@RequestParam String name) {
+        return repo.findByStudentNameContainingIgnoreCase(name);
+    }
+
+    @PostMapping
+    @SuppressWarnings("null") // Added this line to resolve the null-safety issue
+    public StudentMarks addMarks(@RequestBody StudentMarks marks) {
+        return repo.save(marks);
     }
 }

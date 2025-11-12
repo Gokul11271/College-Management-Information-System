@@ -22,9 +22,10 @@ public class FeesController {
         return ResponseEntity.ok(service.save(fees));
     }
 
-    @GetMapping("/student/{studentId}")
-    public List<Fees> byStudent(@PathVariable Long studentId) {
-        return service.findByStudent(studentId);
+    // FIX: Changed path and parameter to use studentName (String)
+    @GetMapping("/student/{studentName}")
+    public List<Fees> byStudent(@PathVariable String studentName) {
+        return service.findByStudent(studentName);
     }
 
     @GetMapping
