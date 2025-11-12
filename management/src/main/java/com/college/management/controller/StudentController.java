@@ -1,8 +1,4 @@
-package com.college.management.controller;
-
-public class StudentController {
-    
-}
+// Removed duplicate class declaration
 package com.college.management.controller;
 
 import com.college.management.model.Student;
@@ -37,7 +33,9 @@ public class StudentController {
     @PostMapping
     public ResponseEntity<Student> create(@Valid @RequestBody Student student) {
         Student created = service.create(student);
-        return ResponseEntity.created(URI.create("/api/students/" + created.getId())).body(created);
+        // return ResponseEntity.created(URI.create("/api/students/" + created.getId())).body(created);
+        return ResponseEntity.created(java.util.Objects.requireNonNull(URI.create("/api/students/" + created.getId()))).body(created);
+
     }
 
     @PutMapping("/{id}")
