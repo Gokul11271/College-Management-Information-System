@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173") // frontend URL
 public class CourseController {
 
     private final CourseService service;
@@ -23,8 +23,10 @@ public class CourseController {
     @PostMapping
     public ResponseEntity<Course> create(@RequestBody Course c) {
         Course saved = service.create(c);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(saved.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(saved.getId())
+                .toUri();
         return ResponseEntity.created(location).body(saved);
     }
 
@@ -44,7 +46,8 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
