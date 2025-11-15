@@ -29,7 +29,17 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("user");
     setUser(null);
+
+    // Redirect
+    window.location.replace("/login");
+
+    // Prevent navigating back
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = () => {
+      window.location.replace("/login");
+    };
   };
+
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loadingAuth }}>

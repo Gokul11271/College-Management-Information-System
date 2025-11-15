@@ -62,12 +62,7 @@ export default function Dashboard() {
                   <div className="text-2xl font-bold mt-2">{fees.length}</div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl shadow">
-                  <div className="text-sm text-gray-500">Outstanding</div>
-                  <div className="text-2xl font-bold mt-2">
-                    ₹ {fees.reduce((s, f) => s + (f.amount || 0), 0)}
-                  </div>
-                </div>
+                
               </div>
 
               {/* LISTS */}
