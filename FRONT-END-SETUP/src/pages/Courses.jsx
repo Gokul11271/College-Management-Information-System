@@ -1,113 +1,160 @@
-// src/pages/Course.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import Sidebar from "../Components/Sidebar";
+import Header from "../Components/Header";
+import api from "../api/api";
+import Loading from "../Components/Loading";
 
-export default function Course() {
+export default function Courses() {
   const [courses, setCourses] = useState([]);
-  const [newCourse, setNewCourse] = useState({
-    courseCode: "",
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+
+  const [form, setForm] = useState({
     courseName: "",
-    credits: "",
-    facultyInCharge: "",
+    courseCode: "",
+    credits: 0,
+    department: "",
   });
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/courses")
-      .then((res) => setCourses(res.data))
-      .catch((err) => console.error("Error fetching courses:", err));
+    fetchCourses();
   }, []);
 
-  const handleSubmit = (e) => {
+  async function fetchCourses() {
+    setLoading(true);
+    try {
+      const res = await api.get("/courses");
+      setCourses(res.data || []);
+    } catch {
+      setCourses([]);
+    }
+    setLoading(false);
+  }
+
+  async function createCourse(e) {
     e.preventDefault();
-    axios
-      .post("http://localhost:8080/api/courses", {
-        ...newCourse,
-        credits: parseInt(newCourse.credits, 10),
-      })
-      .then((res) => {
-        setCourses([...courses, res.data]);
-        setNewCourse({
-          courseCode: "",
-          courseName: "",
-          credits: "",
-          facultyInCharge: "",
-        });
-      })
-      .catch((err) => console.error("Error adding course:", err));
-  };
+    try {
+      await api.post("/courses", form);
+      setShowForm(false);
+
+      // Reset form
+      setForm({
+        courseName: "",
+        courseCode: "",
+        credits: 0,
+        department: "",
+      });
+
+      fetchCourses();
+    } catch (e) {
+      alert("Failed to create course");
+    }
+  }
+
+  async function deleteCourse(id) {
+    if (!confirm("Delete course?")) return;
+    try {
+      await api.delete(`/courses/${id}`);
+      fetchCourses();
+    } catch {
+      alert("Failed to delete");
+    }
+  }
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Course Management</h2>
+    <div className="min-h-screen flex bg-gray-100">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Courses</h2>
+            <button
+              onClick={() => setShowForm((s) => !s)}
+              className="bg-indigo-600 text-white px-4 py-2 rounded"
+            >
+              {showForm ? "Close" : "Add Course"}
+            </button>
+          </div>
 
-      <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-3">
-        <input
-          type="text"
-          placeholder="Course Code"
-          value={newCourse.courseCode}
-          onChange={(e) =>
-            setNewCourse({ ...newCourse, courseCode: e.target.value })
-          }
-          className="border p-2 rounded w-1/5"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Course Name"
-          value={newCourse.courseName}
-          onChange={(e) =>
-            setNewCourse({ ...newCourse, courseName: e.target.value })
-          }
-          className="border p-2 rounded w-1/5"
-          required
-        />
-        <input
-          type="number"
-          placeholder="Credits"
-          value={newCourse.credits}
-          onChange={(e) =>
-            setNewCourse({ ...newCourse, credits: e.target.value })
-          }
-          className="border p-2 rounded w-1/5"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Faculty In Charge"
-          value={newCourse.facultyInCharge}
-          onChange={(e) =>
-            setNewCourse({ ...newCourse, facultyInCharge: e.target.value })
-          }
-          className="border p-2 rounded w-1/5"
-        />
-        <button type="submit" className="bg-blue-600 text-white px-4 rounded">
-          Add
-        </button>
-      </form>
+          {showForm && (
+            <form onSubmit={createCourse} className="mb-6 space-y-3">
+              <input
+                className="w-full p-3 border rounded"
+                placeholder="Course Name"
+                value={form.courseName}
+                onChange={(e) =>
+                  setForm({ ...form, courseName: e.target.value })
+                }
+                required
+              />
 
-      <table className="min-w-full bg-white border">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="py-2 px-4 border">ID</th>
-            <th className="py-2 px-4 border">Code</th>
-            <th className="py-2 px-4 border">Name</th>
-            <th className="py-2 px-4 border">Credits</th>
-            <th className="py-2 px-4 border">Faculty In Charge</th>
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map((c) => (
-            <tr key={c.id} className="hover:bg-gray-50">
-              <td className="py-2 px-4 border">{c.id}</td>
-              <td className="py-2 px-4 border">{c.courseCode}</td>
-              <td className="py-2 px-4 border">{c.courseName}</td>
-              <td className="py-2 px-4 border">{c.credits}</td>
-              <td className="py-2 px-4 border">{c.facultyInCharge}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              <input
+                className="w-full p-3 border rounded"
+                placeholder="Course Code"
+                value={form.courseCode}
+                onChange={(e) =>
+                  setForm({ ...form, courseCode: e.target.value })
+                }
+                required
+              />
+
+              <input
+                className="w-full p-3 border rounded"
+                type="number"
+                placeholder="Credits"
+                value={form.credits}
+                onChange={(e) =>
+                  setForm({ ...form, credits: Number(e.target.value) })
+                }
+                required
+              />
+
+              <input
+                className="w-full p-3 border rounded"
+                placeholder="Department"
+                value={form.department}
+                onChange={(e) =>
+                  setForm({ ...form, department: e.target.value })
+                }
+                required
+              />
+
+              <button className="bg-green-600 text-white px-4 py-2 rounded">
+                Save
+              </button>
+            </form>
+          )}
+
+          {loading ? (
+            <Loading />
+          ) : (
+            <ul className="space-y-3">
+              {courses.map((c) => (
+                <li
+                  key={c.id}
+                  className="bg-white p-4 rounded shadow flex justify-between"
+                >
+                  <div>
+                    <div className="font-semibold">{c.courseName}</div>
+                    <div className="text-sm text-gray-500">{c.courseCode}</div>
+                    <div className="text-sm">{c.department}</div>
+                    <div className="text-sm text-gray-600">
+                      {c.credits} credits
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => deleteCourse(c.id)}
+                    className="text-red-600"
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

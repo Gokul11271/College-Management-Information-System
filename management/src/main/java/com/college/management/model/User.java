@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +19,4 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
-    private String role; // "STUDENT" or "FACULTY"
 }
