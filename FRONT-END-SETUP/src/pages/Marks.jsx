@@ -153,7 +153,13 @@ import Loading from "../Components/Loading";
 export default function Marks() {
   const [marks, setMarks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ studentId: "", courseId: "", marks: "" });
+
+  const [form, setForm] = useState({
+    studentName: "",
+    subject: "",
+    marksObtained: "",
+    maxMarks: "",
+  });
 
   useEffect(() => {
     fetchMarks();
@@ -172,17 +178,31 @@ export default function Marks() {
 
   async function createMark(e) {
     e.preventDefault();
+
+    const payload = {
+      studentName: form.studentName,
+      subject: form.subject,
+      marksObtained: Number(form.marksObtained),
+      maxMarks: Number(form.maxMarks),
+    };
+
     try {
-      await api.post("/marks", { ...form, marks: Number(form.marks) });
-      setForm({ studentId: "", courseId: "", marks: "" });
+      await api.post("/marks", payload);
+      setForm({
+        studentName: "",
+        subject: "",
+        marksObtained: "",
+        maxMarks: "",
+      });
       fetchMarks();
     } catch {
-      alert("Create failed");
+      alert("Failed to add marks");
     }
   }
 
   async function deleteMark(id) {
-    if (!confirm("Delete mark record?")) return;
+    if (!confirm("Delete mark?")) return;
+
     try {
       await api.delete(`/marks/${id}`);
       fetchMarks();
@@ -197,29 +217,81 @@ export default function Marks() {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Marks</h2>
-          </div>
+          <h2 className="text-2xl font-bold mb-6">Student Marks</h2>
 
-          <form onSubmit={createMark} className="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-4 gap-3">
-            <input placeholder="Student ID" value={form.studentId} onChange={e=>setForm({...form, studentId:e.target.value})} className="p-2 border rounded"/>
-            <input placeholder="Course ID" value={form.courseId} onChange={e=>setForm({...form, courseId:e.target.value})} className="p-2 border rounded"/>
-            <input placeholder="Marks" value={form.marks} onChange={e=>setForm({...form, marks:e.target.value})} className="p-2 border rounded"/>
-            <button className="bg-green-600 text-white rounded px-4 py-2">Add</button>
+          {/* Form */}
+          <form
+            onSubmit={createMark}
+            className="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-4 gap-3"
+          >
+            <input
+              required
+              placeholder="Student Name"
+              value={form.studentName}
+              onChange={(e) =>
+                setForm({ ...form, studentName: e.target.value })
+              }
+              className="p-2 border rounded"
+            />
+
+            <input
+              required
+              placeholder="Subject"
+              value={form.subject}
+              onChange={(e) => setForm({ ...form, subject: e.target.value })}
+              className="p-2 border rounded"
+            />
+
+            <input
+              required
+              type="number"
+              placeholder="Marks Obtained"
+              value={form.marksObtained}
+              onChange={(e) =>
+                setForm({ ...form, marksObtained: e.target.value })
+              }
+              className="p-2 border rounded"
+            />
+
+            <input
+              required
+              type="number"
+              placeholder="Max Marks"
+              value={form.maxMarks}
+              onChange={(e) => setForm({ ...form, maxMarks: e.target.value })}
+              className="p-2 border rounded"
+            />
+
+            <button className="bg-green-600 text-white rounded px-4 py-2">
+              Add
+            </button>
           </form>
 
-          {loading ? <Loading /> : (
+          {/* List */}
+          {loading ? (
+            <Loading />
+          ) : (
             <ul className="space-y-3">
-              {marks.map(m=>(
-                <li key={m.id} className="bg-white p-4 rounded shadow flex justify-between">
+              {marks.map((m) => (
+                <li
+                  key={m.id}
+                  className="bg-white p-4 rounded shadow flex justify-between"
+                >
                   <div>
-                    <div className="font-semibold">Student: {m.studentId}</div>
-                    <div className="text-sm text-gray-500">Course: {m.courseId}</div>
+                    <div className="font-semibold">
+                      {m.studentName} — {m.subject}
+                    </div>
+                    <div className="text-gray-500">
+                      {m.marksObtained} / {m.maxMarks}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="font-semibold">{m.marks}</div>
-                    <button onClick={()=>deleteMark(m.id)} className="text-red-600">Delete</button>
-                  </div>
+
+                  <button
+                    onClick={() => deleteMark(m.id)}
+                    className="text-red-600"
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>

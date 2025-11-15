@@ -5,6 +5,8 @@ import api from "../api/api";
 import Loading from "../Components/Loading";
 
 export default function Courses() {
+  const [search, setSearch] = useState("");
+
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -37,7 +39,6 @@ export default function Courses() {
       await api.post("/courses", form);
       setShowForm(false);
 
-      // Reset form
       setForm({
         courseName: "",
         courseCode: "",
@@ -61,6 +62,13 @@ export default function Courses() {
     }
   }
 
+  // 🔍 SEARCH FILTER
+  const filteredCourses = courses.filter((c) =>
+    `${c.courseName} ${c.courseCode} ${c.department} ${c.credits}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen flex bg-gray-100">
       <Sidebar />
@@ -77,6 +85,16 @@ export default function Courses() {
             </button>
           </div>
 
+          {/* 🔍 SEARCH BAR */}
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="mb-6 p-3 w-full md:w-1/3 border rounded shadow-sm"
+          />
+
+          {/* Add Course Form */}
           {showForm && (
             <form onSubmit={createCourse} className="mb-6 space-y-3">
               <input
@@ -126,11 +144,12 @@ export default function Courses() {
             </form>
           )}
 
+          {/* Courses List */}
           {loading ? (
             <Loading />
           ) : (
             <ul className="space-y-3">
-              {courses.map((c) => (
+              {filteredCourses.map((c) => (
                 <li
                   key={c.id}
                   className="bg-white p-4 rounded shadow flex justify-between"
